@@ -20,11 +20,15 @@ ARG shared_workspace=/opt/workspace
 RUN mkdir -p ${shared_workspace}/data && \
     mkdir -p /usr/share/man/man1 && \
     apt-get update -y && \
-    apt-get install -y curl python3 r-base && \
+    apt-get install -y curl python3 r-base libpostgresql-jdbc-java && \
     ln -s /usr/bin/python3 /usr/bin/python && \
+    apt-get install -y python3-pip && \
     curl https://downloads.lightbend.com/scala/${scala_version}/scala-${scala_version}.deb -k -o scala.deb && \
     apt install -y ./scala.deb && \
     rm -rf scala.deb /var/lib/apt/lists/*
+
+COPY ./docker/requirements.txt /
+RUN pip3 install -r /requirements.txt && python -c "import nltk;nltk.download('stopwords');"
 
 ENV SCALA_HOME="/usr/bin/scala"
 ENV PATH=${PATH}:${SCALA_HOME}/bin

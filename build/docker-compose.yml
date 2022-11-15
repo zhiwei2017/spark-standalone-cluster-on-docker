@@ -9,7 +9,7 @@ volumes:
     driver: local
 services:
   jupyterlab:
-    image: jupyterlab:3.0.0-spark-3.0.0
+    image: jupyterlab:3.5.0-spark-3.3.1
     container_name: jupyterlab
     environment:
       DB_CONNECTION: "postgresql://postgres:mysecretpassword@db:5432/postgres"
@@ -23,7 +23,7 @@ services:
     volumes:
       - shared-workspace:/opt/workspace
   spark-master:
-    image: spark-master:3.0.0
+    image: spark-master:3.3.1
     container_name: spark-master
     environment:
       DB_CONNECTION: "postgresql://postgres:mysecretpassword@db:5432/postgres"
@@ -37,7 +37,7 @@ services:
     depends_on:
       - db
   spark-worker-1:
-    image: spark-worker:3.0.0
+    image: spark-worker:3.3.1
     container_name: spark-worker-1
     environment:
       SPARK_WORKER_CORES: 1
@@ -53,7 +53,7 @@ services:
     links:
       - "db:db"
   spark-worker-2:
-    image: spark-worker:3.0.0
+    image: spark-worker:3.3.1
     container_name: spark-worker-2
     environment:
       SPARK_WORKER_CORES: 1

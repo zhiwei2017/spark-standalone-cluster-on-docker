@@ -8,25 +8,31 @@
 
 BUILD_DATE="$(date -u +'%Y-%m-%d')"
 
-SHOULD_BUILD_BASE="$(grep -m 1 build_base build.yml | grep -o -P '(?<=").*(?=")')"
-SHOULD_BUILD_SPARK="$(grep -m 1 build_spark build.yml | grep -o -P '(?<=").*(?=")')"
-SHOULD_BUILD_JUPYTERLAB="$(grep -m 1 build_jupyter build.yml | grep -o -P '(?<=").*(?=")')"
+SHOULD_BUILD_BASE="$(cat build.yml | grep build_base | cut -d':' -f2 | xargs)"
+SHOULD_BUILD_SPARK="$(cat build.yml | grep build_spark | cut -d':' -f2 | xargs)"
+SHOULD_BUILD_JUPYTERLAB="$(cat build.yml | grep build_jupyter | cut -d':' -f2 | xargs)"
 
-SPARK_VERSION="$(grep -m 1 spark build.yml | grep -o -P '(?<=").*(?=")')"
-JUPYTERLAB_VERSION="$(grep -m 1 jupyterlab build.yml | grep -o -P '(?<=").*(?=")')"
+SPARK_VERSION="$(cat build.yml | grep spark | head -1 | cut -d':' -f2 | xargs)"
+JUPYTERLAB_VERSION="$(cat build.yml | grep jupyterlab | head -1 | cut -d':' -f2 | xargs)"
 
 SPARK_VERSION_MAJOR=${SPARK_VERSION:0:1}
+SPARK_VERSION_MINOR=${SPARK_VERSION:2:1}
 
 if [[ "${SPARK_VERSION_MAJOR}" == "2" ]]
 then
   HADOOP_VERSION="2.7"
   SCALA_VERSION="2.11.12"
   SCALA_KERNEL_VERSION="0.6.0"
-elif [[ "${SPARK_VERSION_MAJOR}"  == "3" ]]
+elif [[ "${SPARK_VERSION_MAJOR}" == "3" ]]
 then
-  HADOOP_VERSION="3.2"
   SCALA_VERSION="2.12.10"
   SCALA_KERNEL_VERSION="0.10.9"
+  if [[ ${SPARK_VERSION_MINOR} -lt 3 ]]
+  then
+    HADOOP_VERSION="3.2"
+  else
+    HADOOP_VERSION="3"
+  fi
 else
   exit 1
 fi
